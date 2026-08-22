@@ -1,0 +1,65 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}{{ project.title }} — {{ profile.full_name }}{% endblock %}
+
+{% block content %}
+<div class="noise"></div>
+<header class="nav">
+  <a class="nav-brand" href="/">
+    <span class="brand-mark">&lt;/&gt;</span>
+    <span>{{ profile.full_name }}</span>
+  </a>
+  <nav class="nav-links">
+    <a href="/#projects">← Barcha loyihalar</a>
+  </nav>
+</header>
+
+<section class="section project-detail">
+  <p class="tag-label">// loyiha</p>
+  <h1>{{ project.title }}</h1>
+  <p class="hero-tagline">{{ project.summary }}</p>
+
+  {% if project.image %}
+  <img class="project-detail-img" src="{{ project.image.url }}" alt="{{ project.title }}">
+  {% endif %}
+
+  <div class="tech-tags">
+    {% for tech in project.tech_list %}<span>{{ tech }}</span>{% endfor %}
+  </div>
+
+  <div class="about-text">
+    <p>{{ project.description|default:project.summary|linebreaksbr }}</p>
+  </div>
+
+  <div class="hero-actions">
+    {% if project.live_url %}<a href="{{ project.live_url }}" class="btn btn-primary" target="_blank" rel="noopener">Jonli ko'rish</a>{% endif %}
+    {% if project.repo_url %}<a href="{{ project.repo_url }}" class="btn btn-ghost" target="_blank" rel="noopener">Manba kod</a>{% endif %}
+  </div>
+
+  {% if related %}
+  <div class="section-head" style="margin-top:4rem">
+    <p class="tag-label">// yana</p>
+    <h2>Boshqa loyihalar</h2>
+  </div>
+  <div class="projects-grid">
+    {% for p in related %}
+    <article class="project-card">
+      <div class="project-thumb">
+        {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}">{% else %}
+        <div class="project-thumb-placeholder">{{ p.title|slice:":2" }}</div>{% endif %}
+      </div>
+      <div class="project-body">
+        <h3><a href="{% url 'main:project_detail' p.slug %}">{{ p.title }}</a></h3>
+        <p>{{ p.summary }}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+<footer class="footer">
+  <p>&copy; {% now "Y" %} {{ profile.full_name }}. Django bilan qurilgan.</p>
+</footer>
+{% endblock %}

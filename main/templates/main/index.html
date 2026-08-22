@@ -1,0 +1,195 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="noise"></div>
+
+<header class="nav" id="top">
+  <a class="nav-brand" href="#top">
+    <span class="brand-mark">&lt;/&gt;</span>
+    <span>{{ profile.full_name }}</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#about">Men haqimda</a>
+    <a href="#skills">Ko'nikmalar</a>
+    <a href="#experience">Tajriba</a>
+    <a href="#projects">Loyihalar</a>
+    <a href="#contact" class="nav-cta">Bog'lanish</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Menyu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">$ status --available</p>
+    <h1 class="hero-title">
+      Salom, men <span class="accent">{{ profile.full_name }}</span>.<br>
+      {{ profile.title }}man.
+    </h1>
+    <p class="hero-tagline">{{ profile.tagline|default:"Ishlaydigan, sinovdan o'tgan va toza kod yozaman — g'oyadan production'gacha." }}</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-primary">Loyihalarni ko'rish</a>
+      <a href="#contact" class="btn btn-ghost">Bog'lanish</a>
+      {% if profile.resume %}
+      <a href="{{ profile.resume.url }}" class="btn btn-text" download>Rezyume ↓</a>
+      {% endif %}
+    </div>
+    <div class="hero-socials">
+      {% if profile.github %}<a href="{{ profile.github }}" target="_blank" rel="noopener">GitHub</a>{% endif %}
+      {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" rel="noopener">LinkedIn</a>{% endif %}
+      {% if profile.telegram %}<a href="{{ profile.telegram }}" target="_blank" rel="noopener">Telegram</a>{% endif %}
+    </div>
+  </div>
+
+  <div class="terminal" id="terminal">
+    <div class="terminal-bar">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+      <span class="terminal-title">whoami.sh</span>
+    </div>
+    <div class="terminal-body" id="terminalBody"></div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="section" id="about">
+  <div class="section-head">
+    <p class="tag-label">// men-haqimda</p>
+    <h2>Qisqacha tanishuv</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>{{ profile.about|linebreaksbr }}</p>
+    </div>
+    <div class="about-meta">
+      {% if profile.location %}
+      <div class="meta-row"><span>Manzil</span><strong>{{ profile.location }}</strong></div>
+      {% endif %}
+      {% if profile.email %}
+      <div class="meta-row"><span>Email</span><strong>{{ profile.email }}</strong></div>
+      {% endif %}
+      {% if profile.phone %}
+      <div class="meta-row"><span>Telefon</span><strong>{{ profile.phone }}</strong></div>
+      {% endif %}
+      <div class="meta-row"><span>Loyihalar</span><strong>{{ projects.count }}</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section class="section section-alt" id="skills">
+  <div class="section-head">
+    <p class="tag-label">// ko'nikmalar</p>
+    <h2>Ish quroli</h2>
+  </div>
+  <div class="skills-grid">
+    {% for category, items in skills_by_category.items %}
+    <div class="skill-card">
+      <h3>{{ category }}</h3>
+      <ul class="skill-list">
+        {% for skill in items %}
+        <li>
+          <div class="skill-row">
+            <span>{{ skill.name }}</span>
+            <span class="skill-level">{{ skill.level }}%</span>
+          </div>
+          <div class="skill-bar"><span style="width: {{ skill.level }}%"></span></div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% empty %}
+    <p class="empty">Ko'nikmalar hali qo'shilmagan. Admin panelga kirib qo'shing.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ============ EXPERIENCE ============ -->
+<section class="section" id="experience">
+  <div class="section-head">
+    <p class="tag-label">// tajriba</p>
+    <h2>Ish yo'lim</h2>
+  </div>
+  <div class="timeline">
+    {% for exp in experiences %}
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <p class="timeline-date">{{ exp.start_date }} — {{ exp.end_date|default:"Hozirgacha" }}</p>
+        <h3>{{ exp.role }}</h3>
+        <p class="timeline-company">{{ exp.company }}</p>
+        <p class="timeline-desc">{{ exp.description }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <p class="empty">Ish tajribasi hali qo'shilmagan.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="section section-alt" id="projects">
+  <div class="section-head">
+    <p class="tag-label">// loyihalar</p>
+    <h2>Tanlangan ishlar</h2>
+  </div>
+  <div class="projects-grid">
+    {% for project in projects %}
+    <article class="project-card">
+      <div class="project-thumb">
+        {% if project.image %}
+          <img src="{{ project.image.url }}" alt="{{ project.title }}" loading="lazy">
+        {% else %}
+          <div class="project-thumb-placeholder">{{ project.title|slice:":2" }}</div>
+        {% endif %}
+        {% if project.featured %}<span class="badge">Asosiy</span>{% endif %}
+      </div>
+      <div class="project-body">
+        <h3>{{ project.title }}</h3>
+        <p>{{ project.summary }}</p>
+        <div class="tech-tags">
+          {% for tech in project.tech_list %}<span>{{ tech }}</span>{% endfor %}
+        </div>
+        <div class="project-links">
+          {% if project.live_url %}<a href="{{ project.live_url }}" target="_blank" rel="noopener">Jonli ko'rish ↗</a>{% endif %}
+          {% if project.repo_url %}<a href="{{ project.repo_url }}" target="_blank" rel="noopener">Kod ↗</a>{% endif %}
+        </div>
+      </div>
+    </article>
+    {% empty %}
+    <p class="empty">Hozircha loyihalar qo'shilmagan. Admin panel orqali qo'shishingiz mumkin: <code>/admin/</code></p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section" id="contact">
+  <div class="section-head">
+    <p class="tag-label">// bog'lanish</p>
+    <h2>Loyiha bormi? Yozing.</h2>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form class="contact-form" method="post" action="#contact">
+    {% csrf_token %}
+    <div class="form-row">
+      {{ form.name }}
+      {{ form.email }}
+    </div>
+    {{ form.subject }}
+    {{ form.message }}
+    <button type="submit" class="btn btn-primary">Xabarni yuborish</button>
+  </form>
+</section>
+
+<footer class="footer">
+  <p>&copy; {% now "Y" %} {{ profile.full_name }}. Django bilan qurilgan.</p>
+</footer>
+{% endblock %}
